@@ -56,7 +56,7 @@ namespace UploadExcel
         {
             InitializeComponent();
         }
-        string fileNames = @"D:\Code\CalculationStats.xlsx";
+        string fileNames = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) +"\\";
         private void select_Click(object sender, EventArgs e)
         {
             OpenFileDialog openfiledialog1 = new OpenFileDialog();
@@ -102,7 +102,7 @@ namespace UploadExcel
                     }
 
                     bulkCopy.BulkCopyTimeout = 600;
-                    bulkCopy.DestinationTableName = "API_StatResponse";
+                    bulkCopy.DestinationTableName = txt_TableName.Text;
                     bulkCopy.WriteToServer(dtResult);
                 }
             }
@@ -110,13 +110,30 @@ namespace UploadExcel
         private void Upload_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(Path.Text))
-                WriteinDbFromEXel(Path.Text);
+            {
+
+                if (System.IO.Path.GetExtension(txt_FileName.Text).ToUpper() != ".XLS" && System.IO.Path.GetExtension(txt_FileName.Text).ToUpper() != ".XLSX")
+                {
+                    MessageBox.Show("the uploaded File is invalid please upload file with extention .XLSX");
+                }
+                try
+                {
+                    WriteinDbFromEXel(Path.Text);
+                    MessageBox.Show("File Uploaded to DB successfully,Now you can check in Database");
+
+                }
+                catch (Exception)
+                { 
+                    MessageBox.Show("Something went wrong please contact an administrator !");
+                }
+            }
+             
             else
                 MessageBox.Show("Please Select File to Upload");
         }
 
-        public void GenerateExcel(List<CalculationResponse> Dtaa,string path)
-        { 
+        public void GenerateExcel(List<CalculationResponse> Dtaa, string path)
+        {
             using (ExcelPackage excelPackage = new ExcelPackage())
             {
                 //Set some properties of the Excel document
@@ -145,39 +162,83 @@ namespace UploadExcel
                     }
 
                 }
-                
 
-                if (File.Exists(fileNames))
+
+                if (File.Exists(path))
                 {
-                    // If file found, delete it    
-                    File.Delete(fileNames);
-                   
+                    if (IsFileLocked(path))
+                    {
+                        MessageBox.Show("File Already Exists with same Name and in Use PLaede close or delete");
+                    }
+                    else
+                    {
+                        File.Delete(path);
+                        FileInfo fi = new FileInfo(path);
+                        excelPackage.SaveAs(fi);
+                    }
+
                 }
-                // Add to 6th row and to the 6th column 
-                
-                //Save your file
-                FileInfo fi = new FileInfo(fileNames);
-                excelPackage.SaveAs(fi);
-                if (check_Db.Checked)
+                else
+                {
+                    FileInfo fi = new FileInfo(path);
+                    excelPackage.SaveAs(fi);
+                }
+                if (api_check_Db.Checked)
                 {
                     WriteinDbFromEXel(path);
                 }
+
+
                 //System.Diagnostics.Process.Start(fileNames);
             }
 
 
         }
-
+        public bool IsFileLocked(string filename)
+        {
+            bool Locked = false;
+            try
+            {
+                FileStream fs =
+                    File.Open(filename, FileMode.OpenOrCreate,
+                    FileAccess.ReadWrite, FileShare.None);
+                fs.Close();
+            }
+            catch (IOException)
+            {
+                Locked = true;
+            }
+            return Locked;
+        }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(request.Text) || string.IsNullOrEmpty(txt_requestUrl.Text))
+             
+            if (string.IsNullOrEmpty(request.Text) || string.IsNullOrEmpty(txt_requestUrl.Text) || string.IsNullOrEmpty(txt_FileName.Text))
             {
-                MessageBox.Show("Enter Request Data");
+                MessageBox.Show("Enter Request Data And Request URL and File Name");
+            }
+            else if (api_check_Db.Checked && string.IsNullOrEmpty(txt_TableName.Text))
+            {
+                MessageBox.Show("Please Enter Table Name");
+            }
+            else if (System.IO.Path.GetExtension(txt_FileName.Text).ToUpper() != ".XLS" && System.IO.Path.GetExtension(txt_FileName.Text).ToUpper() != ".XLSX")
+            {
+                MessageBox.Show("Please Enter Valid FileName with .xlsx extension");
             }
             else
             {
-            callAPIANdSaveintoDB();
+                try
+                {
+                    callAPIANdSaveintoDB();
+                    MessageBox.Show("Excel file Created Successfully in the path" +" "+ fileNames + txt_FileName.Text);
+                }
+                catch (Exception)
+                {
+
+                    MessageBox.Show("Something went wrong please contact an administrator !");
+                }
+
             }
         }
 
@@ -190,7 +251,7 @@ namespace UploadExcel
             };
             using (HttpClient client = new HttpClient())
             {
-               
+
                 //will return the Http content if the request has value else will return null
                 using (var httpContent = request != null ? new StringContent(request.Text, Encoding.UTF8, "application/json") : null)
 
@@ -211,8 +272,26 @@ namespace UploadExcel
         public async void callAPIANdSaveintoDB()
         {
             List<CalculationResponse> list = await callAPi();
-            GenerateExcel(list,fileNames);
-             
+            GenerateExcel(list, fileNames + txt_FileName.Text);
+
         }
+
+        private void api_check_Db_CheckedChanged(object sender, EventArgs e)
+        {
+            if (api_check_Db.Checked)
+            {
+                lbl_tableName.Visible = true;
+                txt_TableName.Visible = true;
+            }
+
+            else
+            {
+                lbl_tableName.Visible = false;
+                txt_TableName.Visible = false;
+            }
+
+        }
+
+
     }
 }
