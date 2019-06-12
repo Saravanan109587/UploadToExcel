@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -55,8 +56,13 @@ namespace UploadExcel
         public btn_upload()
         {
             InitializeComponent();
+            if (!checkOLDB())
+            {
+                MessageBox.Show("Microsoft Access Database Engine is not installed on this machine Please install before launch this application from the path " + "https://www.microsoft.com/en-us/download/confirmation.aspx?id=13255 ");
+                System.Environment.Exit(0);
+            }
         }
-        string fileNames = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) +"\\";
+        string fileNames = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\";
         private void select_Click(object sender, EventArgs e)
         {
             //added comment to check TFS Sync
@@ -124,11 +130,11 @@ namespace UploadExcel
 
                 }
                 catch (Exception)
-                { 
+                {
                     MessageBox.Show("Something went wrong please contact an administrator !");
                 }
             }
-             
+
             else
                 MessageBox.Show("Please Select File to Upload");
         }
@@ -214,7 +220,7 @@ namespace UploadExcel
 
         private void button1_Click(object sender, EventArgs e)
         {
-             
+
             if (string.IsNullOrEmpty(request.Text) || string.IsNullOrEmpty(txt_requestUrl.Text) || string.IsNullOrEmpty(txt_FileName.Text))
             {
                 MessageBox.Show("Enter Request Data And Request URL and File Name");
@@ -232,7 +238,7 @@ namespace UploadExcel
                 try
                 {
                     callAPIANdSaveintoDB();
-                    MessageBox.Show("Excel file Created Successfully in the path" +" "+ fileNames + txt_FileName.Text);
+                    MessageBox.Show("Excel file Created Successfully in the path" + " " + fileNames + txt_FileName.Text);
                 }
                 catch (Exception)
                 {
@@ -293,6 +299,37 @@ namespace UploadExcel
 
         }
 
+        private bool checkOLDB()
+        {
+            
+            string AccessDBAsValue = string.Empty;
+            RegistryKey rkACDBKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes\Installer\Products");
+            if (rkACDBKey != null)
+            {
+                //int lnSubKeyCount = 0;
+                //lnSubKeyCount =rkACDBKey.SubKeyCount; 
+                foreach (string subKeyName in rkACDBKey.GetSubKeyNames())
+                {
+                    using (RegistryKey RegSubKey = rkACDBKey.OpenSubKey(subKeyName))
+                    {
+                        foreach (string valueName in RegSubKey.GetValueNames())
+                        {
+                            if (valueName.ToUpper() == "PRODUCTNAME")
+                            {
+                                AccessDBAsValue = (string)RegSubKey.GetValue(valueName.ToUpper());
+                                if (AccessDBAsValue.Contains("Access database engine"))
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+            }
+            return false;
 
+        }
     }
-}
+    }
+ 
