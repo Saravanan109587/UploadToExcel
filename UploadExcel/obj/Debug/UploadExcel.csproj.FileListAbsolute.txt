@@ -1,0 +1,15 @@
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\bin\Debug\UploadExcel.exe.config
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\bin\Debug\UploadExcel.exe
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\bin\Debug\UploadExcel.pdb
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\obj\Debug\UploadExcel.csprojAssemblyReference.cache
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\obj\Debug\UploadExcel.Properties.Resources.resources
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\obj\Debug\UploadExcel.csproj.GenerateResource.cache
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\obj\Debug\UploadExcel.csproj.CoreCompileInputs.cache
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\obj\Debug\UploadExcel.exe
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\obj\Debug\UploadExcel.pdb
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\obj\Debug\UploadExcel.btn_upload.resources
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\bin\Debug\Newtonsoft.Json.dll
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\bin\Debug\Newtonsoft.Json.xml
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\obj\Debug\UploadExcel.csproj.CopyComplete
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\bin\Debug\EPPlus.dll
+C:\Users\saravanan.n\source\repos\UploadExcel\UploadExcel\bin\Debug\EPPlus.xml
